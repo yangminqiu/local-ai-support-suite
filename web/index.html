@@ -1,63 +1,263 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Local AI Support Suite</title>
   <style>
-    body{font-family:Arial;background:#0b1020;color:#eef2ff;margin:0}
-    .wrap{max-width:860px;margin:0 auto;padding:16px}
-    .msg{padding:10px;border-radius:8px;margin:8px 0;white-space:pre-wrap}
-    .u{background:#1d4ed8}.a{background:#172036}
-    textarea{width:100%;height:90px;background:#0f172a;color:#fff;border:1px solid #334155;border-radius:8px;padding:10px}
-    button{padding:10px 14px;border:0;border-radius:8px;background:#22c55e;color:#04130a;font-weight:700}
+    :root{
+      --bg:#070b16;
+      --panel:#0f172a;
+      --panel-2:#131c33;
+      --line:#26324d;
+      --text:#eaf0ff;
+      --muted:#9fb2d9;
+      --brand:#22c55e;
+      --warn:#f59e0b;
+      --accent:#3b82f6;
+      --danger:#ef4444;
+      --radius:12px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(1200px 700px at 20% -10%,#1a2450 0%,var(--bg) 45%);color:var(--text)}
+    .app{max-width:1100px;margin:0 auto;padding:18px}
+
+    .topbar{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:14px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--brand),#16a34a);display:grid;place-items:center;color:#05220f;font-weight:900}
+    .title{margin:0;font-size:1.1rem}
+    .subtitle{margin:2px 0 0;color:var(--muted);font-size:.86rem}
+
+    .badges{display:flex;gap:8px;flex-wrap:wrap}
+    .badge{border:1px solid var(--line);background:rgba(18,30,57,.7);padding:6px 10px;border-radius:999px;font-size:.8rem;color:var(--muted)}
+    .badge.ok{color:#b8f7cd;border-color:#276a49}
+
+    .grid{display:grid;grid-template-columns:320px 1fr;gap:14px}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+
+    .card{background:linear-gradient(180deg,var(--panel),var(--panel-2));border:1px solid var(--line);border-radius:var(--radius);padding:14px}
+    .card h3{margin:0 0 10px;font-size:.95rem}
+
+    .kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 12px}
+    .kpi{background:rgba(8,14,28,.55);border:1px solid var(--line);border-radius:10px;padding:10px}
+    .kpi .v{font-size:1.05rem;font-weight:700}
+    .kpi .l{font-size:.75rem;color:var(--muted)}
+
+    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0}
+    select,input,textarea,button{font:inherit}
+    select,input,textarea{width:100%;background:#0b1326;color:#fff;border:1px solid #324469;border-radius:10px;padding:10px}
+    textarea{height:96px;resize:vertical}
+
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+    button{border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}
+    .btn-send{background:var(--brand);color:#05220f}
+    .btn-handoff{background:var(--warn);color:#2a1800}
+    .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+
+    .log-wrap{display:flex;flex-direction:column;gap:10px}
+    .log{min-height:420px;max-height:60vh;overflow:auto;padding:8px;border:1px solid var(--line);border-radius:10px;background:rgba(8,14,28,.45)}
+    .msg{padding:10px 12px;border-radius:10px;margin:8px 0;white-space:pre-wrap;line-height:1.45}
+    .u{background:#1d4ed8;color:#ecf4ff}
+    .a{background:#1a2742;color:#ecf4ff;border:1px solid #2f436d}
+    .sys{background:#132119;color:#d5f7de;border:1px solid #2b5f40}
+    .err{background:#32141a;color:#ffd8de;border:1px solid #6b2a37}
+
+    .muted{color:var(--muted);font-size:.84rem}
+    .contact{display:grid;gap:6px;margin-top:10px}
+    .contact a{color:#9dc0ff;text-decoration:none}
+    .footer{margin-top:10px;font-size:.78rem;color:var(--muted)}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <h2>Local AI Support Suite</h2>
-    <label>Profile:
-      <select id="profile" style="margin:0 0 10px 8px;padding:6px;border-radius:6px;background:#0f172a;color:#fff;border:1px solid #334155">
-        <option value="smb">SMB Support</option>
-        <option value="web3">Web3 Community</option>
-        <option value="creator">Creator Ops</option>
-      </select>
-    </label>
-    <div id="log"></div>
-    <textarea id="input" placeholder="Ask a support question..."></textarea><br>
-    <button onclick="sendMsg()">Send</button>
-    <button onclick="requestHandoff()" style="background:#f59e0b;color:#1f1200;margin-left:8px">Request Human Handoff</button>
+  <div class="app">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">AI</div>
+        <div>
+          <h1 class="title">Local AI Support Suite</h1>
+          <p class="subtitle">Private-by-default support copilot · SMB / Web3 / Creator</p>
+        </div>
+      </div>
+      <div class="badges">
+        <span class="badge ok" id="net">● Online</span>
+        <span class="badge" id="msgCount">Messages: 0</span>
+        <span class="badge" id="profileBadge">Profile: SMB</span>
+      </div>
+    </div>
+
+    <div class="grid">
+      <aside class="card">
+        <h3>Control Panel</h3>
+        <div class="kpis">
+          <div class="kpi"><div class="v" id="handoffCount">0</div><div class="l">Handoffs</div></div>
+          <div class="kpi"><div class="v" id="sessionMins">0m</div><div class="l">Session Time</div></div>
+        </div>
+
+        <div class="row">
+          <label class="muted" for="profile">Support Profile</label>
+          <select id="profile">
+            <option value="smb">SMB Support</option>
+            <option value="web3">Web3 Community</option>
+            <option value="creator">Creator Ops</option>
+          </select>
+        </div>
+
+        <div class="row">
+          <label class="muted" for="customerContact">Customer contact (optional)</label>
+          <input id="customerContact" placeholder="email / telegram / phone" />
+        </div>
+
+        <div class="actions" style="margin-top:8px">
+          <button class="btn-ghost" onclick="clearChat()">Clear Chat</button>
+          <button class="btn-ghost" onclick="copyTranscript()">Copy Transcript</button>
+        </div>
+
+        <div class="contact">
+          <h3 style="margin-top:14px">Business Contact</h3>
+          <a href="mailto:tom074738@gmail.com">Email: tom074738@gmail.com</a>
+          <a href="https://wa.me/60187839237" target="_blank" rel="noopener">WhatsApp: +60 18-783 9237</a>
+        </div>
+        <div class="footer">Tip: Configure <code>HANDOFF_WEBHOOK_URL</code> to forward escalations to Telegram/Email/Zapier/n8n.</div>
+      </aside>
+
+      <main class="card log-wrap">
+        <h3>Live Conversation</h3>
+        <div id="log" class="log"></div>
+        <textarea id="input" placeholder="Ask a support question... (Enter to send, Shift+Enter newline)"></textarea>
+        <div class="actions">
+          <button class="btn-send" onclick="sendMsg()">Send</button>
+          <button class="btn-handoff" onclick="requestHandoff()">Request Human Handoff</button>
+        </div>
+      </main>
+    </div>
   </div>
+
   <script>
     const log = document.getElementById('log');
     const input = document.getElementById('input');
     const profile = document.getElementById('profile');
+    const profileBadge = document.getElementById('profileBadge');
+    const msgCount = document.getElementById('msgCount');
+    const handoffCount = document.getElementById('handoffCount');
+    const net = document.getElementById('net');
+    const customerContact = document.getElementById('customerContact');
+
     const messages = [];
-    function add(txt, cls){ const d=document.createElement('div'); d.className='msg '+cls; d.textContent=txt; log.appendChild(d); }
+    let handoffs = 0;
+    const startedAt = Date.now();
+
+    function add(txt, cls='a'){
+      const d = document.createElement('div');
+      d.className = 'msg ' + cls;
+      d.textContent = txt;
+      log.appendChild(d);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function refreshMeta(){
+      msgCount.textContent = `Messages: ${messages.length}`;
+      const pMap = { smb:'SMB', web3:'Web3', creator:'Creator' };
+      profileBadge.textContent = `Profile: ${pMap[profile.value] || profile.value}`;
+      handoffCount.textContent = String(handoffs);
+      const mins = Math.max(0, Math.floor((Date.now() - startedAt) / 60000));
+      document.getElementById('sessionMins').textContent = mins + 'm';
+    }
+
     async function sendMsg(){
-      const t=input.value.trim(); if(!t) return; input.value='';
-      messages.push({role:'user',content:t}); add('You: '+t,'u');
-      add('Assistant is thinking...','a'); const ph=log.lastChild;
-      const r=await fetch('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages, profile: profile.value})});
-      const j=await r.json();
-      ph.textContent='Assistant: '+j.content;
-      messages.push({role:'assistant',content:j.content});
+      const t = input.value.trim();
+      if(!t) return;
+      input.value = '';
+      messages.push({role:'user',content:t});
+      add('You: ' + t, 'u');
+      add('Assistant is thinking…', 'a');
+      const ph = log.lastChild;
+      refreshMeta();
+
+      try {
+        const r = await fetch('/chat', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({messages, profile: profile.value})
+        });
+        if(!r.ok) throw new Error('HTTP ' + r.status);
+        const j = await r.json();
+        ph.textContent = 'Assistant: ' + (j.content || '(no response)');
+        messages.push({role:'assistant',content:j.content || ''});
+      } catch (e) {
+        ph.className = 'msg err';
+        ph.textContent = 'System: request failed — ' + e.message;
+      }
+      refreshMeta();
     }
 
     async function requestHandoff(){
-      const summary = prompt('Short issue summary for human handoff:','Need human support follow-up');
+      const summary = prompt('Short issue summary for human handoff:', 'Need human support follow-up');
       if(summary === null) return;
-      const contact = prompt('Customer contact (email/telegram/phone):','');
-      const r=await fetch('/handoff',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({profile:profile.value,summary,contact,messages})});
-      const j=await r.json();
-      if(j.sent){
-        add('System: Human handoff request sent successfully.','a');
-      }else if(j.requires_webhook){
-        add('System: Handoff logged locally. Configure HANDOFF_WEBHOOK_URL to forward to Telegram/Email/Zapier.','a');
-      }else{
-        add('System: Handoff request failed to send to webhook.','a');
+      const contact = (customerContact.value || '').trim();
+
+      try {
+        const r = await fetch('/handoff', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ profile: profile.value, summary, contact, messages })
+        });
+        const j = await r.json();
+
+        handoffs += 1;
+        if (j.sent) {
+          add('System: Human handoff request sent successfully.', 'sys');
+        } else if (j.requires_webhook) {
+          add('System: Handoff logged locally. Configure HANDOFF_WEBHOOK_URL to forward it.', 'sys');
+        } else {
+          add('System: Handoff request failed to send to webhook.', 'err');
+        }
+      } catch (e) {
+        add('System: Handoff failed — ' + e.message, 'err');
+      }
+      refreshMeta();
+    }
+
+    function clearChat(){
+      if(!confirm('Clear visible chat log?')) return;
+      log.innerHTML = '';
+      messages.length = 0;
+      add('System: New session started.', 'sys');
+      refreshMeta();
+    }
+
+    async function copyTranscript(){
+      const text = messages.map(m => `${m.role.toUpperCase()}: ${m.content}`).join('\n\n');
+      try {
+        await navigator.clipboard.writeText(text || '(empty transcript)');
+        add('System: Transcript copied to clipboard.', 'sys');
+      } catch {
+        add('System: Clipboard copy blocked by browser.', 'err');
       }
     }
+
+    function updateNetworkBadge(){
+      if(navigator.onLine){
+        net.textContent = '● Online';
+        net.className = 'badge ok';
+      }else{
+        net.textContent = '● Offline';
+        net.className = 'badge';
+      }
+    }
+
+    profile.addEventListener('change', refreshMeta);
+    input.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter' && !e.shiftKey){
+        e.preventDefault();
+        sendMsg();
+      }
+    });
+    window.addEventListener('online', updateNetworkBadge);
+    window.addEventListener('offline', updateNetworkBadge);
+
+    add('System: Ready. Choose profile and start chatting.', 'sys');
+    refreshMeta();
+    updateNetworkBadge();
   </script>
 </body>
 </html>

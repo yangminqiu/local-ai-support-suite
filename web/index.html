@@ -74,16 +74,30 @@
       <div class="brand">
         <div class="logo">AI</div>
         <div>
-          <h1 class="title">Local AI Support Suite</h1>
-          <p class="subtitle">Private-by-default support copilot · SMB / Web3 / Creator</p>
+          <h1 class="title" data-i18n="title">Local AI Support Suite</h1>
+          <p class="subtitle" data-i18n="subtitle">Private-by-default support copilot · SMB / Web3 / Creator</p>
         </div>
       </div>
       <div class="badges">
         <span class="badge ok" id="net">● Online</span>
         <span class="badge" id="msgCount">Messages: 0</span>
         <span class="badge" id="profileBadge">Profile: SMB</span>
+        <button class="badge" id="langToggle" onclick="toggleLang()">中文</button>
       </div>
     </div>
+
+    <section class="card" style="margin-bottom:14px">
+      <h3 data-i18n="landing_head">Use Cases</h3>
+      <div class="kpis" style="grid-template-columns:repeat(3,1fr)">
+        <div class="kpi"><div class="v" data-i18n="uc1t">SMB Support</div><div class="l" data-i18n="uc1d">Order issues, refunds, SLA triage</div></div>
+        <div class="kpi"><div class="v" data-i18n="uc2t">Web3 Community</div><div class="l" data-i18n="uc2d">Wallet/onchain FAQs, moderation workflows</div></div>
+        <div class="kpi"><div class="v" data-i18n="uc3t">Creator Ops</div><div class="l" data-i18n="uc3d">Membership support, campaign Q&A</div></div>
+      </div>
+      <div class="actions">
+        <span class="badge" data-i18n="pricing">Starter: Local Free · Pro: Private Deploy · Enterprise: Custom</span>
+        <a class="badge ok" href="mailto:tom074738@gmail.com" data-i18n="cta">Book deployment consultation</a>
+      </div>
+    </section>
 
     <div class="grid">
       <aside class="card">
@@ -133,6 +147,39 @@
   </div>
 
   <script>
+    const I18N = {
+      en: {
+        title: 'Local AI Support Suite',
+        subtitle: 'Private-by-default support copilot · SMB / Web3 / Creator',
+        landing_head: 'Use Cases',
+        uc1t: 'SMB Support', uc1d: 'Order issues, refunds, SLA triage',
+        uc2t: 'Web3 Community', uc2d: 'Wallet/onchain FAQs, moderation workflows',
+        uc3t: 'Creator Ops', uc3d: 'Membership support, campaign Q&A',
+        pricing: 'Starter: Local Free · Pro: Private Deploy · Enterprise: Custom',
+        cta: 'Book deployment consultation'
+      },
+      zh: {
+        title: '本地 AI 客服套件',
+        subtitle: '默认私有部署的客服副驾 · SMB / Web3 / 创作者',
+        landing_head: '应用场景',
+        uc1t: '中小企业客服', uc1d: '订单问题、退款处理、SLA 分流',
+        uc2t: 'Web3 社区支持', uc2d: '钱包/链上 FAQ 与社区运营流程',
+        uc3t: '创作者运营', uc3d: '会员支持、活动问答、社群管理',
+        pricing: '入门版: 本地免费 · 专业版: 私有部署 · 企业版: 定制方案',
+        cta: '预约部署咨询'
+      }
+    };
+
+    let LANG = 'en';
+    function applyLang(){
+      document.querySelectorAll('[data-i18n]').forEach(el=>{
+        const k = el.getAttribute('data-i18n');
+        if(I18N[LANG]?.[k]) el.textContent = I18N[LANG][k];
+      });
+      document.getElementById('langToggle').textContent = LANG === 'en' ? '中文' : 'EN';
+    }
+    function toggleLang(){ LANG = LANG === 'en' ? 'zh' : 'en'; applyLang(); }
+
     const log = document.getElementById('log');
     const input = document.getElementById('input');
     const profile = document.getElementById('profile');
@@ -258,6 +305,7 @@
     add('System: Ready. Choose profile and start chatting.', 'sys');
     refreshMeta();
     updateNetworkBadge();
+    applyLang();
   </script>
 </body>
 </html>

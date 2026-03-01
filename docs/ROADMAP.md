@@ -1,14 +1,15 @@
 # Product Roadmap
 
-## v0.1 (current)
+## v0.1
 - Local chat API (Ollama)
 - Basic web UI
 - Health endpoint
 
-## v0.2
+## v0.2 (current)
 - Document ingestion + chunking
-- Local vector index
-- Retrieval augmented response
+- Lightweight local retrieval index (no external DB)
+- Retrieval-augmented responses
+- Reindex endpoint and KB stats endpoint
 
 ## v0.3
 - Multi-tenant profiles

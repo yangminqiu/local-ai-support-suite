@@ -20,7 +20,14 @@ pip install -r requirements.txt
 python app.py
 ```
 
-3. Open browser:
+3. Reindex KB (optional but recommended):
+
+```bash
+curl -X POST http://localhost:8787/kb/reindex
+curl http://localhost:8787/kb/stats
+```
+
+4. Open browser:
 
 `http://localhost:8787`
 

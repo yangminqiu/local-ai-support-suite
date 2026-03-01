@@ -48,6 +48,11 @@ Then open `http://localhost:8787`.
 - [x] v0.4 Human handoff via webhook
 - [ ] v1.0 production deployment scripts + observability
 
+## Contact
+
+- WhatsApp: +60 18-783 9237
+- Direct link: https://wa.me/60187839237
+
 ## License
 
 MIT

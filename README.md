@@ -52,6 +52,7 @@ Then open `http://localhost:8787`.
 
 - WhatsApp: +60 18-783 9237
 - Direct link: https://wa.me/60187839237
+- Email: tom074738@gmail.com
 
 ## License
 

@@ -11,14 +11,15 @@
 - Retrieval-augmented responses
 - Reindex endpoint and KB stats endpoint
 
-## v0.3 (current)
+## v0.3
 - Multi-profile policy packs (SMB/Web3/Creator)
 - Profile-select in web chat UI
 - KB stats endpoint exposes available profiles
 
-## v0.4
-- Human handoff (Telegram/Email webhook)
-- SLA rules and escalation
+## v0.4 (current)
+- Human handoff endpoint (`/handoff`)
+- UI handoff trigger button
+- Webhook forwarding for Telegram/Email/Zapier/n8n
 
 ## v1.0
 - Production deployment scripts

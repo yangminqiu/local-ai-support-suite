@@ -26,6 +26,7 @@
     <div id="log"></div>
     <textarea id="input" placeholder="Ask a support question..."></textarea><br>
     <button onclick="sendMsg()">Send</button>
+    <button onclick="requestHandoff()" style="background:#f59e0b;color:#1f1200;margin-left:8px">Request Human Handoff</button>
   </div>
   <script>
     const log = document.getElementById('log');
@@ -41,6 +42,21 @@
       const j=await r.json();
       ph.textContent='Assistant: '+j.content;
       messages.push({role:'assistant',content:j.content});
+    }
+
+    async function requestHandoff(){
+      const summary = prompt('Short issue summary for human handoff:','Need human support follow-up');
+      if(summary === null) return;
+      const contact = prompt('Customer contact (email/telegram/phone):','');
+      const r=await fetch('/handoff',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({profile:profile.value,summary,contact,messages})});
+      const j=await r.json();
+      if(j.sent){
+        add('System: Human handoff request sent successfully.','a');
+      }else if(j.requires_webhook){
+        add('System: Handoff logged locally. Configure HANDOFF_WEBHOOK_URL to forward to Telegram/Email/Zapier.','a');
+      }else{
+        add('System: Handoff request failed to send to webhook.','a');
+      }
     }
   </script>
 </body>

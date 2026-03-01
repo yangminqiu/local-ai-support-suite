@@ -31,6 +31,17 @@ curl http://localhost:8787/kb/stats
 
 `http://localhost:8787`
 
+## Handoff webhook (optional)
+
+Set webhook to forward escalation requests to Telegram/Email/Zapier/n8n:
+
+```bash
+export HANDOFF_WEBHOOK_URL="https://your-webhook-endpoint"
+python app.py
+```
+
+The UI `Request Human Handoff` button will call `/handoff` and forward payload if webhook is configured.
+
 ## Enterprise hardening (next)
 
 - reverse proxy + TLS

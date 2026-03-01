@@ -9,6 +9,7 @@ app = Flask(__name__, static_folder="../web", static_url_path="")
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://127.0.0.1:11434/api/chat")
 MODEL = os.getenv("MODEL", "llama3.1:8b-instruct-q4_K_M")
 KB_DIR = Path(os.getenv("KB_DIR", "../kb")).resolve()
+HANDOFF_WEBHOOK_URL = os.getenv("HANDOFF_WEBHOOK_URL", "")
 
 BASE_POLICY = """You are an enterprise local support assistant.
 - Keep responses concise and practical.
@@ -132,6 +133,33 @@ def kb_stats():
     return jsonify({"chunks": len(KB_INDEX), "kb_dir": str(KB_DIR), "profiles": list(PROFILE_POLICIES.keys())})
 
 
+@app.post("/handoff")
+def handoff():
+    data = request.get_json(force=True)
+    profile = str(data.get("profile", "smb"))
+    contact = str(data.get("contact", "")).strip()
+    summary = str(data.get("summary", "")).strip()
+    recent_messages = data.get("messages", [])[-6:]
+
+    payload = {
+        "profile": profile,
+        "contact": contact,
+        "summary": summary,
+        "messages": recent_messages,
+        "source": "local-ai-support-suite",
+    }
+
+    sent = False
+    if HANDOFF_WEBHOOK_URL:
+        try:
+            r = requests.post(HANDOFF_WEBHOOK_URL, json=payload, timeout=15)
+            sent = 200 <= r.status_code < 300
+        except Exception:
+            sent = False
+
+    return jsonify({"ok": True, "sent": sent, "requires_webhook": not bool(HANDOFF_WEBHOOK_URL)})
+
+
 @app.get("/health")
 def health():
     try:
@@ -139,7 +167,7 @@ def health():
         ok = r.status_code == 200
     except Exception:
         ok = False
-    return jsonify({"ok": ok, "model": MODEL, "kb_chunks": len(KB_INDEX)})
+    return jsonify({"ok": ok, "model": MODEL, "kb_chunks": len(KB_INDEX), "handoff_webhook": bool(HANDOFF_WEBHOOK_URL)})
 
 
 if __name__ == "__main__":

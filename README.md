@@ -6,12 +6,12 @@ Open-source toolkit to deploy **local/private AI customer support** for SMBs, We
 
 Most teams want AI support but cannot send sensitive customer data to third-party SaaS. This project helps deploy a private stack with controllable data boundaries.
 
-## Core Features (v0.2)
+## Core Features (v0.3)
 
 - Local LLM backend (Ollama)
 - Web chat widget/API
 - Local knowledge-base retrieval (Markdown/TXT) with `/kb/reindex`
-- Policy layer (allowed/blocked topics)
+- Multi-profile policy packs: `smb`, `web3`, `creator`
 - Human handoff hooks (Telegram/Email webhook plan)
 - Ops health checks (`/health`, `/kb/stats`)
 
@@ -42,8 +42,8 @@ Then open `http://localhost:8787`.
 ## Roadmap
 
 - [x] v0.1 scaffold
-- [ ] v0.2 RAG document index
-- [ ] v0.3 role-based policy profiles
+- [x] v0.2 RAG document index
+- [x] v0.3 role-based policy profiles
 - [ ] v0.4 WhatsApp/Telegram handoff
 - [ ] v1.0 production deployment scripts + observability
 

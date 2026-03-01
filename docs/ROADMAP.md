@@ -11,9 +11,10 @@
 - Retrieval-augmented responses
 - Reindex endpoint and KB stats endpoint
 
-## v0.3
-- Multi-tenant profiles
-- Guardrail policy packs (SMB/Web3/Creator)
+## v0.3 (current)
+- Multi-profile policy packs (SMB/Web3/Creator)
+- Profile-select in web chat UI
+- KB stats endpoint exposes available profiles
 
 ## v0.4
 - Human handoff (Telegram/Email webhook)

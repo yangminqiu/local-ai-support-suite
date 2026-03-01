@@ -10,12 +10,28 @@ OLLAMA_URL = os.getenv("OLLAMA_URL", "http://127.0.0.1:11434/api/chat")
 MODEL = os.getenv("MODEL", "llama3.1:8b-instruct-q4_K_M")
 KB_DIR = Path(os.getenv("KB_DIR", "../kb")).resolve()
 
-SYSTEM_POLICY = """You are an enterprise local support assistant.
+BASE_POLICY = """You are an enterprise local support assistant.
 - Keep responses concise and practical.
 - Do not expose secrets, tokens, or internal credentials.
 - If uncertain, ask one clarifying question.
 - If knowledge snippets are provided, prioritize them and cite source file names.
 """
+
+PROFILE_POLICIES = {
+    "smb": """Profile: SMB support assistant.
+- Prioritize faster resolution, clear next steps, and low technical jargon.
+- Ask for order id, contact, and issue category when needed.
+""",
+    "web3": """Profile: Web3 community support assistant.
+- Explain wallet/network/tx topics clearly and conservatively.
+- Never request private keys or seed phrases.
+- For security-sensitive issues, recommend official channels and verification steps.
+""",
+    "creator": """Profile: Creator support assistant.
+- Focus on audience response, content ops, and publishing workflows.
+- Keep answers concise and action-oriented.
+""",
+}
 
 KB_INDEX: List[Dict[str, str]] = []
 
@@ -83,6 +99,10 @@ def chat():
     data = request.get_json(force=True)
     messages = data.get("messages", [])
 
+    profile = str(data.get("profile", "smb")).lower().strip()
+    if profile not in PROFILE_POLICIES:
+        profile = "smb"
+
     last_user = next((m.get("content", "") for m in reversed(messages) if m.get("role") == "user"), "")
     refs = retrieve(last_user, k=4)
     ref_block = ""
@@ -92,7 +112,8 @@ def chat():
             lines.append(f"[{r['source']}#{r['chunk_id']}] {r['text']}")
         ref_block = "\n\nKnowledge snippets:\n" + "\n".join(lines)
 
-    msgs = [{"role": "system", "content": SYSTEM_POLICY + ref_block}] + messages
+    system_policy = BASE_POLICY + "\n" + PROFILE_POLICIES.get(profile, PROFILE_POLICIES["smb"]) + ref_block
+    msgs = [{"role": "system", "content": system_policy}] + messages
     payload = {"model": MODEL, "messages": msgs, "stream": False}
     r = requests.post(OLLAMA_URL, json=payload, timeout=180)
     r.raise_for_status()
@@ -108,7 +129,7 @@ def kb_reindex():
 
 @app.get("/kb/stats")
 def kb_stats():
-    return jsonify({"chunks": len(KB_INDEX), "kb_dir": str(KB_DIR)})
+    return jsonify({"chunks": len(KB_INDEX), "kb_dir": str(KB_DIR), "profiles": list(PROFILE_POLICIES.keys())})
 
 
 @app.get("/health")

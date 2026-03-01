@@ -16,6 +16,13 @@
 <body>
   <div class="wrap">
     <h2>Local AI Support Suite</h2>
+    <label>Profile:
+      <select id="profile" style="margin:0 0 10px 8px;padding:6px;border-radius:6px;background:#0f172a;color:#fff;border:1px solid #334155">
+        <option value="smb">SMB Support</option>
+        <option value="web3">Web3 Community</option>
+        <option value="creator">Creator Ops</option>
+      </select>
+    </label>
     <div id="log"></div>
     <textarea id="input" placeholder="Ask a support question..."></textarea><br>
     <button onclick="sendMsg()">Send</button>
@@ -23,13 +30,14 @@
   <script>
     const log = document.getElementById('log');
     const input = document.getElementById('input');
+    const profile = document.getElementById('profile');
     const messages = [];
     function add(txt, cls){ const d=document.createElement('div'); d.className='msg '+cls; d.textContent=txt; log.appendChild(d); }
     async function sendMsg(){
       const t=input.value.trim(); if(!t) return; input.value='';
       messages.push({role:'user',content:t}); add('You: '+t,'u');
       add('Assistant is thinking...','a'); const ph=log.lastChild;
-      const r=await fetch('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages})});
+      const r=await fetch('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages, profile: profile.value})});
       const j=await r.json();
       ph.textContent='Assistant: '+j.content;
       messages.push({role:'assistant',content:j.content});

@@ -22,7 +22,7 @@ Most teams want AI support but cannot send sensitive customer data to third-part
 - Web3 community operators
 - Creator/content teams handling high-volume DMs
 
-## Quick Start (draft)
+## Quick Start
 
 ```bash
 # 1) start local model service
@@ -39,6 +39,13 @@ python app.py
 ```
 
 Then open `http://localhost:8787`.
+
+## Project Docs
+
+- Architecture: `docs/ARCHITECTURE.md`
+- Deployment: `docs/DEPLOYMENT.md`
+- Roadmap: `docs/ROADMAP.md`
+- Contributing: `CONTRIBUTING.md`
 
 ## Roadmap
 

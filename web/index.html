@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Local AI Support Suite</title>
+  <style>
+    body{font-family:Arial;background:#0b1020;color:#eef2ff;margin:0}
+    .wrap{max-width:860px;margin:0 auto;padding:16px}
+    .msg{padding:10px;border-radius:8px;margin:8px 0;white-space:pre-wrap}
+    .u{background:#1d4ed8}.a{background:#172036}
+    textarea{width:100%;height:90px;background:#0f172a;color:#fff;border:1px solid #334155;border-radius:8px;padding:10px}
+    button{padding:10px 14px;border:0;border-radius:8px;background:#22c55e;color:#04130a;font-weight:700}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h2>Local AI Support Suite</h2>
+    <div id="log"></div>
+    <textarea id="input" placeholder="Ask a support question..."></textarea><br>
+    <button onclick="sendMsg()">Send</button>
+  </div>
+  <script>
+    const log = document.getElementById('log');
+    const input = document.getElementById('input');
+    const messages = [];
+    function add(txt, cls){ const d=document.createElement('div'); d.className='msg '+cls; d.textContent=txt; log.appendChild(d); }
+    async function sendMsg(){
+      const t=input.value.trim(); if(!t) return; input.value='';
+      messages.push({role:'user',content:t}); add('You: '+t,'u');
+      add('Assistant is thinking...','a'); const ph=log.lastChild;
+      const r=await fetch('/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages})});
+      const j=await r.json();
+      ph.textContent='Assistant: '+j.content;
+      messages.push({role:'assistant',content:j.content});
+    }
+  </script>
+</body>
+</html>

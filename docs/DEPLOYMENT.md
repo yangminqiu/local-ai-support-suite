@@ -1,0 +1,32 @@
+# Deployment Notes
+
+## Local (Mac/Linux)
+
+1. Install Ollama and pull model:
+
+```bash
+brew install ollama
+brew services start ollama
+ollama pull llama3.1:8b-instruct-q4_K_M
+```
+
+2. Run API + web:
+
+```bash
+cd api
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python app.py
+```
+
+3. Open browser:
+
+`http://localhost:8787`
+
+## Enterprise hardening (next)
+
+- reverse proxy + TLS
+- SSO / role auth
+- request logs + SIEM forwarding
+- PII redaction pipeline
